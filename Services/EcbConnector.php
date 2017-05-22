@@ -18,9 +18,6 @@ use Shopware\Models\Shop\Currency;
  */
 class EcbConnector
 {
-    /**
-     *
-     */
     const URL_ECB_REFERENCE_RATES = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
@@ -59,6 +56,8 @@ class EcbConnector
     /**
      * Populates the internal storage with ecb
      * euro foreign exchange reference rates.
+     *
+     * @return $this
      */
     public function fetch()
     {
@@ -83,6 +82,8 @@ class EcbConnector
         } catch (CurrencyNodeNotFoundException $exception) {
             $this->logger->error($exception->getMessage());
         }
+
+        return $this;
     }
 
     /**
@@ -90,6 +91,8 @@ class EcbConnector
      * rates as factor into the currencies that
      * exist in the database. Currencies are
      * matched by their ISO-Code (ISO 4217).
+     *
+     * @return $this
      */
     public function apply()
     {
@@ -108,5 +111,7 @@ class EcbConnector
         }
 
         $this->modelManager->flush();
+
+        return $this;
     }
 }
