@@ -13,7 +13,7 @@
                     <label>Live</label>
                 </option>
                 <option>
-                    <value>cronjob</value>
+                    <value>cron</value>
                     <label>Cronjob</label>
                 </option>
             </store>
