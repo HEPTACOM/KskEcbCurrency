@@ -2,6 +2,7 @@
 
 namespace KskEcbCurrency\Services;
 
+use Doctrine\ORM\EntityRepository;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\XmlParseException;
 use KskEcbCurrency\Exceptions\CurrencyNodeNotFoundException;
@@ -9,6 +10,7 @@ use KskEcbCurrency\Exceptions\ResourceNotReachableException;
 use Shopware\Components\HttpClient\GuzzleFactory;
 use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
+use Shopware\Models\Shop\Currency;
 
 /**
  * Class EcbConnector
@@ -39,7 +41,7 @@ class EcbConnector
     /**
      * @var float[]
      */
-    private $currencies = [];
+    private $ecbCurrencies = [];
 
     /**
      * EcbConnector constructor.
@@ -72,7 +74,7 @@ class EcbConnector
             }
 
             foreach($xmlSource->xml()->Cube->Cube->Cube as $eurofxref) {
-                $this->currencies[(string) $eurofxref['currency']] = (float) $eurofxref['rate'];
+                $this->ecbCurrencies[(string) $eurofxref['currency']] = (float) $eurofxref['rate'];
             }
         } catch (ResourceNotReachableException $exception) {
             $this->logger->error($exception->getMessage());
@@ -81,5 +83,30 @@ class EcbConnector
         } catch (CurrencyNodeNotFoundException $exception) {
             $this->logger->error($exception->getMessage());
         }
+    }
+
+    /**
+     * Writes ecb euro foreign exchange reference
+     * rates as factor into the currencies that
+     * exist in the database. Currencies are
+     * matched by their ISO-Code (ISO 4217).
+     */
+    public function apply()
+    {
+        /** @var EntityRepository $repository */
+        $repository = $this->modelManager->getRepository(Currency::class);
+
+        /** @var Currency[] $shopCurrencies */
+        $shopCurrencies = $repository->findAll();
+
+        foreach ($shopCurrencies as $shopCurrency) {
+            if (!array_key_exists($shopCurrency->getCurrency(), $this->ecbCurrencies)) {
+                continue;
+            }
+
+            $shopCurrency->setFactor($this->ecbCurrencies[$shopCurrency->getCurrency()]);
+        }
+
+        $this->modelManager->flush();
     }
 }

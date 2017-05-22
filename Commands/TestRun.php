@@ -19,5 +19,6 @@ class TestRun extends ShopwareCommand
         /** @var EcbConnector $connector */
         $connector = $this->container->get('ksk_ecb_currency.services.ecb_connector');
         $connector->fetch();
+        $connector->apply();
     }
 }
