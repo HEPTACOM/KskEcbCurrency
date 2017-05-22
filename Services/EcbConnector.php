@@ -8,6 +8,7 @@ use KskEcbCurrency\Exceptions\CurrencyNodeNotFoundException;
 use KskEcbCurrency\Exceptions\ResourceNotReachableException;
 use Shopware\Components\HttpClient\GuzzleFactory;
 use Shopware\Components\Logger;
+use Shopware\Components\Model\ModelManager;
 
 /**
  * Class EcbConnector
@@ -26,6 +27,11 @@ class EcbConnector
     private $guzzleClient;
 
     /**
+     * @var ModelManager
+     */
+    private $modelManager;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -38,11 +44,13 @@ class EcbConnector
     /**
      * EcbConnector constructor.
      * @param GuzzleFactory $guzzleFactory
+     * @param ModelManager $modelManager
      * @param Logger $logger
      */
-    public function __construct(GuzzleFactory $guzzleFactory, Logger $logger)
+    public function __construct(GuzzleFactory $guzzleFactory, ModelManager $modelManager, Logger $logger)
     {
         $this->guzzleClient = $guzzleFactory->createClient();
+        $this->modelManager = $modelManager;
         $this->logger = $logger;
     }
 
