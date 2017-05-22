@@ -15,6 +15,10 @@ use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UpdateContext;
 use Shopware\Components\Plugin\DBALConfigReader;
 
+/**
+ * Class KskEcbCurrency
+ * @package KskEcbCurrency
+ */
 class KskEcbCurrency extends Plugin
 {
     const UPDATE_STRATEGY_LIVE = 'live';
@@ -52,6 +56,9 @@ class KskEcbCurrency extends Plugin
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -60,6 +67,9 @@ class KskEcbCurrency extends Plugin
         ];
     }
 
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
     public function executeCronjob(Enlight_Event_EventArgs $args)
     {
         if ($this->getUpdateStrategy() !== static::UPDATE_STRATEGY_CRON) {
@@ -69,6 +79,9 @@ class KskEcbCurrency extends Plugin
         $this->doUpdate();
     }
 
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
     public function executeLiveUpdate(Enlight_Event_EventArgs $args)
     {
         /** @var Enlight_Controller_Request_Request $request */
@@ -85,6 +98,9 @@ class KskEcbCurrency extends Plugin
         $this->doUpdate();
     }
 
+    /**
+     * @return string
+     */
     private function getUpdateStrategy()
     {
         /** @var DBALConfigReader $configReader */
