@@ -2,14 +2,22 @@
 
 namespace KskEcbCurrency\Services;
 
-use Enlight_Exception;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\XmlParseException;
+use KskEcbCurrency\Exceptions\CurrencyNodeNotFoundException;
+use KskEcbCurrency\Exceptions\ResourceNotReachableException;
 use Shopware\Components\HttpClient\GuzzleFactory;
 use Shopware\Components\Logger;
-use SimpleXMLElement;
 
+/**
+ * Class EcbConnector
+ * @package KskEcbCurrency\Services
+ */
 class EcbConnector
 {
+    /**
+     *
+     */
     const URL_ECB_REFERENCE_RATES = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
@@ -27,27 +35,42 @@ class EcbConnector
      */
     private $currencies = [];
 
+    /**
+     * EcbConnector constructor.
+     * @param GuzzleFactory $guzzleFactory
+     * @param Logger $logger
+     */
     public function __construct(GuzzleFactory $guzzleFactory, Logger $logger)
     {
         $this->guzzleClient = $guzzleFactory->createClient();
         $this->logger = $logger;
     }
 
+    /**
+     * Populates the internal storage with ecb
+     * euro foreign exchange reference rates.
+     */
     public function fetch()
     {
         try {
-            $eurofxref = $this->guzzleClient->get(static::URL_ECB_REFERENCE_RATES);
+            $xmlSource = $this->guzzleClient->get(static::URL_ECB_REFERENCE_RATES);
 
-            if ($eurofxref->getStatusCode() !== 200) {
-                throw new Enlight_Exception();
+            if ($xmlSource->getStatusCode() !== 200) {
+                throw new ResourceNotReachableException();
             }
 
-            $xmlElement = new SimpleXMLElement($eurofxref->getBody());
-
-            foreach($xmlElement->Cube->Cube->Cube as $rate) {
-                $this->currencies[(string) $rate['currency']] = (float) $rate['rate'];
+            if (!isset($xmlSource->xml()->Cube->Cube->Cube)) {
+                throw new CurrencyNodeNotFoundException();
             }
-        } catch (Enlight_Exception $exception) {
+
+            foreach($xmlSource->xml()->Cube->Cube->Cube as $eurofxref) {
+                $this->currencies[(string) $eurofxref['currency']] = (float) $eurofxref['rate'];
+            }
+        } catch (ResourceNotReachableException $exception) {
+            $this->logger->error($exception->getMessage());
+        } catch (XmlParseException $exception) {
+            $this->logger->error($exception->getMessage());
+        } catch (CurrencyNodeNotFoundException $exception) {
             $this->logger->error($exception->getMessage());
         }
     }
