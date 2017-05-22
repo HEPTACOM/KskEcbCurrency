@@ -9,5 +9,8 @@
             <argument type="service" id="guzzle_http_client_factory" />
             <argument type="service" id="pluginlogger" />
         </service>
+        <service id="ksk_ecb_currency.commands.test_run" class="KskEcbCurrency\Commands\TestRun">
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>
