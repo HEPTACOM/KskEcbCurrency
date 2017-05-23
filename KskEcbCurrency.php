@@ -7,6 +7,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
 use Enlight_Controller_Request_Request;
 use Enlight_Event_EventArgs;
+use Exception;
 use KskEcbCurrency\Models\UpdateReport;
 use KskEcbCurrency\Services\EcbConnector;
 use Shopware\Components\Logger;
@@ -40,12 +41,12 @@ class KskEcbCurrency extends Plugin
 
     private function updateModels()
     {
-        /** @var ModelManager $models */
-        $models = $this->container->get('models');
-        $tool = new SchemaTool($models);
+        /** @var ModelManager $modelManager */
+        $modelManager = $this->container->get('models');
+        $tool = new SchemaTool($modelManager);
 
         $schema = [
-            $models->getClassMetadata(UpdateReport::class),
+            $modelManager->getClassMetadata(UpdateReport::class),
         ];
 
         try {
@@ -112,8 +113,12 @@ class KskEcbCurrency extends Plugin
         $configReader = $this->container->get('shopware.plugin.config_reader');
         $config = $configReader->getByPluginName($this->getName());
 
-        if ($config['update_strategy'] === static::UPDATE_STRATEGY_CRON) {
-            return static::UPDATE_STRATEGY_CRON;
+        if (in_array($config['update_strategy'], [
+            static::UPDATE_STRATEGY_LIVE,
+            static::UPDATE_STRATEGY_CACHE,
+            static::UPDATE_STRATEGY_CRON,
+        ])) {
+            return $config['update_strategy'];
         } else {
             return static::UPDATE_STRATEGY_LIVE;
         }
@@ -121,8 +126,23 @@ class KskEcbCurrency extends Plugin
 
     private function doUpdate()
     {
-        /** @var EcbConnector $connector */
-        $connector = $this->container->get('ksk_ecb_currency.services.ecb_connector');
-        $connector->fetch()->apply();
+        $updateReport = new UpdateReport();
+
+        try {
+            /** @var EcbConnector $connector */
+            $connector = $this->container->get('ksk_ecb_currency.services.ecb_connector');
+            $connector->fetch()->apply();
+
+            $updateReport->setSuccess(true);
+        } catch (Exception $exception) {
+            /** @var Logger $logger */
+            $logger = $this->container->get('pluginlogger');
+            $logger->error($exception->getMessage());
+        }
+
+        /** @var ModelManager $modelManager */
+        $modelManager = $this->container->get('models');
+        $modelManager->persist($updateReport);
+        $modelManager->flush($updateReport);
     }
 }
