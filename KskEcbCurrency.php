@@ -7,7 +7,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
 use Enlight_Controller_Request_Request;
 use Enlight_Event_EventArgs;
-use KskEcbCurrency\Models\InternalStorage;
+use KskEcbCurrency\Models\UpdateReport;
 use KskEcbCurrency\Services\EcbConnector;
 use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
@@ -45,7 +45,7 @@ class KskEcbCurrency extends Plugin
         $tool = new SchemaTool($models);
 
         $schema = [
-            $models->getClassMetadata(InternalStorage::class),
+            $models->getClassMetadata(UpdateReport::class),
         ];
 
         try {
@@ -106,7 +106,7 @@ class KskEcbCurrency extends Plugin
     /**
      * @return string
      */
-    private function getUpdateStrategy()
+    public function getUpdateStrategy()
     {
         /** @var DBALConfigReader $configReader */
         $configReader = $this->container->get('shopware.plugin.config_reader');
