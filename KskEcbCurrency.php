@@ -9,6 +9,7 @@ use Enlight_Controller_Request_Request;
 use Enlight_Event_EventArgs;
 use KskEcbCurrency\Models\InternalStorage;
 use KskEcbCurrency\Services\EcbConnector;
+use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
@@ -53,7 +54,9 @@ class KskEcbCurrency extends Plugin
             try {
                 $tool->updateSchema($schema, true);
             } catch (DBALException $exception) {
-                // TODO handle exception
+                /** @var Logger $logger */
+                $logger = $this->container->get('pluginlogger');
+                $logger->error($exception->getMessage());
             }
         }
     }
