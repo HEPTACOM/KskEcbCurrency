@@ -9,7 +9,7 @@ use Shopware\Components\Model\ModelEntity;
 use Shopware\Kernel;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="UpdateReportRepository")
  * @ORM\Table(name="ksk_ecb_currency_update_report")
  */
 class UpdateReport extends ModelEntity

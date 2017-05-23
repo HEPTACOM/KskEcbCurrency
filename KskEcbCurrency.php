@@ -2,6 +2,8 @@
 
 namespace KskEcbCurrency;
 
+use DateInterval;
+use DateTime;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
@@ -9,6 +11,7 @@ use Enlight_Controller_Request_Request;
 use Enlight_Event_EventArgs;
 use Exception;
 use KskEcbCurrency\Models\UpdateReport;
+use KskEcbCurrency\Models\UpdateReportRepository;
 use KskEcbCurrency\Services\EcbConnector;
 use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
@@ -29,6 +32,8 @@ class KskEcbCurrency extends Plugin
 
     const UPDATE_STRATEGY_CRON = 'cron';
 
+    const DI_KEY_ENTITY_MANAGER = 'models';
+
     public function install(InstallContext $context)
     {
         $this->updateModels();
@@ -42,7 +47,7 @@ class KskEcbCurrency extends Plugin
     private function updateModels()
     {
         /** @var ModelManager $modelManager */
-        $modelManager = $this->container->get('models');
+        $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
         $tool = new SchemaTool($modelManager);
 
         $schema = [
@@ -78,11 +83,9 @@ class KskEcbCurrency extends Plugin
      */
     public function executeCronjob(Enlight_Event_EventArgs $args)
     {
-        if ($this->getUpdateStrategy() !== static::UPDATE_STRATEGY_CRON) {
-            return;
+        if ($this->getUpdateStrategy() === static::UPDATE_STRATEGY_CRON) {
+            $this->doUpdate();
         }
-
-        $this->doUpdate();
     }
 
     /**
@@ -97,11 +100,25 @@ class KskEcbCurrency extends Plugin
             return;
         }
 
-        if ($this->getUpdateStrategy() !== static::UPDATE_STRATEGY_LIVE) {
-            return;
+        $updateCache = false;
+        if ($this->getUpdateStrategy() === static::UPDATE_STRATEGY_CACHE) {
+            /** @var ModelManager $modelManager */
+            $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
+
+            /** @var UpdateReportRepository $repository */
+            $repository = $modelManager->getRepository(UpdateReport::class);
+            $updateReport = $repository->getLatestSuccessfulUpdateReport();
+
+            $oneHourAgo = (new DateTime())->sub(new DateInterval('PT1H'));
+            if ($updateReport->getTimestamp() < $oneHourAgo) {
+                $updateCache = true;
+            }
         }
 
-        $this->doUpdate();
+        if ($this->getUpdateStrategy() === static::UPDATE_STRATEGY_LIVE
+            || ($this->getUpdateStrategy() === static::UPDATE_STRATEGY_CACHE && $updateCache === true)) {
+            $this->doUpdate();
+        }
     }
 
     /**
@@ -141,7 +158,7 @@ class KskEcbCurrency extends Plugin
         }
 
         /** @var ModelManager $modelManager */
-        $modelManager = $this->container->get('models');
+        $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
         $modelManager->persist($updateReport);
         $modelManager->flush($updateReport);
     }
