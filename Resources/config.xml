@@ -13,6 +13,10 @@
                     <label>Live</label>
                 </option>
                 <option>
+                    <value>cache</value>
+                    <label>Live (1 Stunde Cache)</label>
+                </option>
+                <option>
                     <value>cron</value>
                     <label>Cronjob</label>
                 </option>

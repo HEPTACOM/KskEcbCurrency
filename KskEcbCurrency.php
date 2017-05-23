@@ -23,6 +23,8 @@ class KskEcbCurrency extends Plugin
 {
     const UPDATE_STRATEGY_LIVE = 'live';
 
+    const UPDATE_STRATEGY_CACHE = 'cache';
+
     const UPDATE_STRATEGY_CRON = 'cron';
 
     public function install(InstallContext $context)
