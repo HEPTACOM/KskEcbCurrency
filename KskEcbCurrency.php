@@ -93,7 +93,7 @@ class KskEcbCurrency extends Plugin
         /** @var Enlight_Controller_Request_Request $request */
         $request = $args->get('request');
 
-        if ($request->getModuleName() !== 'frontend') {
+        if ($request->getModuleName() !== 'frontend' && $request->getModuleName() !== null) {
             return;
         }
 
