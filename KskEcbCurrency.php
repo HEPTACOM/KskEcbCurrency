@@ -10,6 +10,7 @@ use Doctrine\ORM\Tools\ToolsException;
 use Enlight_Controller_Request_Request;
 use Enlight_Event_EventArgs;
 use Exception;
+use KskEcbCurrency\Exceptions\SuccessfulUpdateReportsNotFoundException;
 use KskEcbCurrency\Models\UpdateReport;
 use KskEcbCurrency\Models\UpdateReportRepository;
 use KskEcbCurrency\Services\EcbConnector;
@@ -60,9 +61,7 @@ class KskEcbCurrency extends Plugin
             try {
                 $tool->updateSchema($schema, true);
             } catch (DBALException $exception) {
-                /** @var Logger $logger */
-                $logger = $this->container->get('pluginlogger');
-                $logger->error($exception->getMessage());
+                $this->getPluginLogger()->error($exception->getMessage());
             }
         }
     }
@@ -107,11 +106,16 @@ class KskEcbCurrency extends Plugin
 
             /** @var UpdateReportRepository $repository */
             $repository = $modelManager->getRepository(UpdateReport::class);
-            $updateReport = $repository->getLatestSuccessfulUpdateReport();
 
-            $oneHourAgo = (new DateTime())->sub(new DateInterval('PT1H'));
-            if ($updateReport->getTimestamp() < $oneHourAgo) {
-                $updateCache = true;
+            try {
+                $updateReport = $repository->getLatestSuccessfulUpdateReport();
+
+                $oneHourAgo = (new DateTime())->sub(new DateInterval('PT1H'));
+                if ($updateReport->getTimestamp() < $oneHourAgo) {
+                    $updateCache = true;
+                }
+            } catch (SuccessfulUpdateReportsNotFoundException $exception) {
+                $this->getPluginLogger()->error($exception->getMessage());
             }
         }
 
@@ -152,14 +156,20 @@ class KskEcbCurrency extends Plugin
 
             $updateReport->setSuccess(true);
         } catch (Exception $exception) {
-            /** @var Logger $logger */
-            $logger = $this->container->get('pluginlogger');
-            $logger->error($exception->getMessage());
+            $this->getPluginLogger()->error($exception->getMessage());
         }
 
         /** @var ModelManager $modelManager */
         $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
         $modelManager->persist($updateReport);
         $modelManager->flush($updateReport);
+    }
+
+    /**
+     * @return Logger
+     */
+    private function getPluginLogger()
+    {
+        return $this->container->get('pluginlogger');
     }
 }
