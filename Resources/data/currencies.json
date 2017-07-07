@@ -1,0 +1,162 @@
+[
+    [
+        "EUR",
+        "Euro",
+        "\u20ac"
+    ],
+    [
+        "USD",
+        "US-Dollar",
+        "$"
+    ],
+    [
+        "JPY",
+        "Japanischer Yen",
+        "\u00a5"
+    ],
+    [
+        "BGN",
+        "Bulgarischer Lew (alt)",
+        "\u043b\u0432."
+    ],
+    [
+        "CZK",
+        "Tschechische Krone",
+        "K\u010d"
+    ],
+    [
+        "DKK",
+        "D\u00e4nische Krone",
+        "kr."
+    ],
+    [
+        "GBP",
+        "Pfund Sterling",
+        "\u00a3"
+    ],
+    [
+        "HUF",
+        "Ungarischer Forint",
+        "Ft"
+    ],
+    [
+        "PLN",
+        "Polnischer Zloty",
+        "z\u0142"
+    ],
+    [
+        "RON",
+        "Rum\u00e4nischer Leu",
+        "RON"
+    ],
+    [
+        "SEK",
+        "Schwedische Krone",
+        "kr"
+    ],
+    [
+        "CHF",
+        "Schweizer Franken",
+        "SFr."
+    ],
+    [
+        "NOK",
+        "Norwegische Krone",
+        "kr"
+    ],
+    [
+        "HRK",
+        "Kroatische Kuna",
+        "kn"
+    ],
+    [
+        "RUB",
+        "Russischer Rubel",
+        "\u20bd"
+    ],
+    [
+        "TRY",
+        "T\u00fcrkische Lira",
+        "\u20ba"
+    ],
+    [
+        "AUD",
+        "Australischer Dollar",
+        "$"
+    ],
+    [
+        "BRL",
+        "Brasilianischer Real",
+        "R$"
+    ],
+    [
+        "CAD",
+        "Kanadischer Dollar",
+        "$"
+    ],
+    [
+        "CNY",
+        "Chinesischer Yuan Renminbi",
+        "\u00a5"
+    ],
+    [
+        "HKD",
+        "Hongkong-Dollar",
+        "HK$"
+    ],
+    [
+        "IDR",
+        "Indonesische Rupie",
+        "Rp"
+    ],
+    [
+        "ILS",
+        "Neuer israelischer Schekel",
+        "\u20aa"
+    ],
+    [
+        "INR",
+        "Indische Rupie",
+        "\u20b9"
+    ],
+    [
+        "KRW",
+        "S\u00fcdkoreanischer Won",
+        "\u20a9"
+    ],
+    [
+        "MXN",
+        "Mexikanischer Peso",
+        "Mex$"
+    ],
+    [
+        "MYR",
+        "Malaysischer Ringgit",
+        "RM"
+    ],
+    [
+        "NZD",
+        "Neuseeland-Dollar",
+        "$"
+    ],
+    [
+        "PHP",
+        "Philippinischer Peso",
+        "\u20b1"
+    ],
+    [
+        "SGD",
+        "Singapur-Dollar",
+        "S$"
+    ],
+    [
+        "THB",
+        "Thail\u00e4ndischer Baht",
+        "\u0e3f"
+    ],
+    [
+        "ZAR",
+        "S\u00fcdafrikanischer Rand",
+        "R"
+    ]
+]
