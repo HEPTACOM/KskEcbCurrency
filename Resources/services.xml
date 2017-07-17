@@ -13,9 +13,5 @@
             <argument type="string">%ksk_ecb_currency.plugin_dir%</argument>
             <argument type="service" id="models" />
         </service>
-
-        <service id="ksk_ecb_currency.commands.test_run" class="KskEcbCurrency\Commands\TestRun">
-            <tag name="console.command"/>
-        </service>
     </services>
 </container>
