@@ -2,11 +2,17 @@
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label>Aktuelle Währungskurse (nach EZB)</label>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
+
     <link>https://www.ksk-agentur.de/</link>
     <author>KSK-Agentur</author>
     <compatibility minVersion="5.2.15" />
+
     <changelog version="1.0.0">
-        <changes>Erstes Release</changes>
+        <changes>Aktuelle Währungskurse der EZB importieren</changes>
+        <changes>Aktualisierungsstrategien: Live, Live (1 Stunde Cache) oder Cronjob</changes>
+    </changelog>
+    <changelog version="1.1.0">
+        <changes>Import-Tool für alle Währungen, die von der EZB unterstützt werden</changes>
     </changelog>
 </plugin>
