@@ -3,6 +3,29 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/config.xsd">
 
     <elements>
+        <element type="button" scope="locale">
+            <name>import_currencies</name>
+            <label>Währungen importieren</label>
+            <options>
+                <handler>
+                    <![CDATA[
+                    function(button) {
+                        Ext.Ajax.request({
+                            url: window.location.href + 'KskEcbCurrency/populateCurrencies/',
+                            method: 'POST',
+                            success: function (operation, opts) {
+                                var response = Ext.decode(operation.responseText);
+
+                                if (response.success) {
+                                    Shopware.Notification.createGrowlMessage('Erfolgreich', 'Alle Währungen wurden importiert.');
+                                }
+                            }
+                        });
+                    }
+                    ]]>
+                </handler>
+            </options>
+        </element>
         <element required="true" type="select" scope="locale">
             <name>update_strategy</name>
             <label>Aktualisierungsstrategie</label>
