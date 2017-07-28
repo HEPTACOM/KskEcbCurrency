@@ -106,8 +106,23 @@ class EcbConnector
             if (!array_key_exists($shopCurrency->getCurrency(), $this->ecbCurrencies)) {
                 continue;
             }
-
-            $shopCurrency->setFactor($this->ecbCurrencies[$shopCurrency->getCurrency()]);
+			
+			
+			/** @var DBALConfigReader $configReader */
+			$configReader = Shopware()->Container()->get('shopware.plugin.config_reader'); //Shopware()->Container() => $this->container...
+			$config = $configReader->getByPluginName('KskEcbCurrency'); //KskEcbCurrency => $this->getName()
+			$security_surcharge = $config['security_surcharge'];
+			
+			if($security_surcharge > 0) {
+            	$shopCurrency->setFactor(
+					($this->ecbCurrencies[$shopCurrency->getCurrency()]
+					 *
+					 (1+($security_surcharge/100))
+					)
+				);
+			} else {
+            	$shopCurrency->setFactor($this->ecbCurrencies[$shopCurrency->getCurrency()]);
+			}
         }
 
         $this->modelManager->flush();

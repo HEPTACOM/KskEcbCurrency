@@ -45,6 +45,12 @@
                 </option>
             </store>
         </element>
+        <element required="true" type="number" scope="locale">
+            <name>security_surcharge</name>
+            <label>Aufschlag (prozentual)</label>
+            <value>0</value>
+            <description>Definiere einen Aufschlag, der auf die importierten Kurse aufgeschlagen wird.</description>
+        </element>
     </elements>
 
 </config>
