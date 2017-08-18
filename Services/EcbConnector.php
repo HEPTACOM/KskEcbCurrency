@@ -10,6 +10,7 @@ use KskEcbCurrency\Exceptions\ResourceNotReachableException;
 use Shopware\Components\HttpClient\GuzzleFactory;
 use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
+use Shopware\Components\Plugin\DBALConfigReader;
 use Shopware\Models\Shop\Currency;
 
 /**
@@ -31,6 +32,11 @@ class EcbConnector
     private $modelManager;
 
     /**
+     * @var array
+     */
+    private $config;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -44,12 +50,18 @@ class EcbConnector
      * EcbConnector constructor.
      * @param GuzzleFactory $guzzleFactory
      * @param ModelManager $modelManager
+     * @param array $config
      * @param Logger $logger
      */
-    public function __construct(GuzzleFactory $guzzleFactory, ModelManager $modelManager, Logger $logger)
-    {
+    public function __construct(
+        GuzzleFactory $guzzleFactory,
+        ModelManager $modelManager,
+        array $config,
+        Logger $logger
+    ) {
         $this->guzzleClient = $guzzleFactory->createClient();
         $this->modelManager = $modelManager;
+        $this->config = $config;
         $this->logger = $logger;
     }
 
@@ -91,6 +103,9 @@ class EcbConnector
      * rates as factor into the currencies that
      * exist in the database. Currencies are
      * matched by their ISO-Code (ISO 4217).
+     * If a surcharge is configured, the factors
+     * are first multiplied by the surcharge
+     * (calculated as percent).
      *
      * @return $this
      */
@@ -106,23 +121,12 @@ class EcbConnector
             if (!array_key_exists($shopCurrency->getCurrency(), $this->ecbCurrencies)) {
                 continue;
             }
-			
-			
-			/** @var DBALConfigReader $configReader */
-			$configReader = Shopware()->Container()->get('shopware.plugin.config_reader'); //Shopware()->Container() => $this->container...
-			$config = $configReader->getByPluginName('KskEcbCurrency'); //KskEcbCurrency => $this->getName()
-			$security_surcharge = $config['security_surcharge'];
-			
-			if($security_surcharge > 0) {
-            	$shopCurrency->setFactor(
-					($this->ecbCurrencies[$shopCurrency->getCurrency()]
-					 *
-					 (1+($security_surcharge/100))
-					)
-				);
-			} else {
-            	$shopCurrency->setFactor($this->ecbCurrencies[$shopCurrency->getCurrency()]);
-			}
+
+			$securitySurcharge = $this->config['security_surcharge'];
+
+            $shopCurrency->setFactor(
+                $this->ecbCurrencies[$shopCurrency->getCurrency()] * (1 + $securitySurcharge / 100)
+            );
         }
 
         $this->modelManager->flush();

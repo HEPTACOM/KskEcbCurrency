@@ -4,9 +4,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="ksk_ecb_currency.config" class="Shopware\Components\Plugin\CachedConfigReader">
+            <factory service="shopware.plugin.cached_config_reader" method="getByPluginName"/>
+            <argument type="string">%ksk_ecb_currency.plugin_name%</argument>
+        </service>
         <service id="ksk_ecb_currency.services.ecb_connector" class="KskEcbCurrency\Services\EcbConnector">
             <argument type="service" id="guzzle_http_client_factory" />
             <argument type="service" id="models" />
+            <argument type="service" id="ksk_ecb_currency.config" />
             <argument type="service" id="pluginlogger" />
         </service>
         <service id="ksk_ecb_currency.services.currency_importer" class="KskEcbCurrency\Services\CurrencyImporter">
