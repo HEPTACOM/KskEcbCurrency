@@ -122,7 +122,7 @@ class EcbConnector
                 continue;
             }
 
-			$securitySurcharge = $this->config['security_surcharge'];
+            $securitySurcharge = $this->config['security_surcharge'];
 
             $shopCurrency->setFactor(
                 $this->ecbCurrencies[$shopCurrency->getCurrency()] * (1 + $securitySurcharge / 100)
