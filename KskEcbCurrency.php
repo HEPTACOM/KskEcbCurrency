@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace KskEcbCurrency;
 
@@ -21,10 +21,6 @@ use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UpdateContext;
 use Shopware\Components\Plugin\DBALConfigReader;
 
-/**
- * Class KskEcbCurrency
- * @package KskEcbCurrency
- */
 class KskEcbCurrency extends Plugin
 {
     const UPDATE_STRATEGY_LIVE = 'live';
@@ -45,27 +41,6 @@ class KskEcbCurrency extends Plugin
         $this->updateModels();
     }
 
-    private function updateModels()
-    {
-        /** @var ModelManager $modelManager */
-        $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
-        $tool = new SchemaTool($modelManager);
-
-        $schema = [
-            $modelManager->getClassMetadata(UpdateReport::class),
-        ];
-
-        try {
-            $tool->createSchema($schema);
-        } catch (ToolsException $exception) {
-            try {
-                $tool->updateSchema($schema, true);
-            } catch (DBALException $exception) {
-                $this->getPluginLogger()->error($exception->getMessage());
-            }
-        }
-    }
-
     /**
      * @return array
      */
@@ -77,9 +52,6 @@ class KskEcbCurrency extends Plugin
         ];
     }
 
-    /**
-     * @param Enlight_Event_EventArgs $args
-     */
     public function executeCronjob(Enlight_Event_EventArgs $args)
     {
         if ($this->getUpdateStrategy() === static::UPDATE_STRATEGY_CRON) {
@@ -87,9 +59,6 @@ class KskEcbCurrency extends Plugin
         }
     }
 
-    /**
-     * @param Enlight_Event_EventArgs $args
-     */
     public function executeLiveUpdate(Enlight_Event_EventArgs $args)
     {
         /** @var Enlight_Controller_Request_Request $request */
@@ -140,8 +109,29 @@ class KskEcbCurrency extends Plugin
             static::UPDATE_STRATEGY_CRON,
         ])) {
             return $config['update_strategy'];
-        } else {
-            return static::UPDATE_STRATEGY_LIVE;
+        }
+
+        return static::UPDATE_STRATEGY_LIVE;
+    }
+
+    private function updateModels()
+    {
+        /** @var ModelManager $modelManager */
+        $modelManager = $this->container->get(static::DI_KEY_ENTITY_MANAGER);
+        $tool = new SchemaTool($modelManager);
+
+        $schema = [
+            $modelManager->getClassMetadata(UpdateReport::class),
+        ];
+
+        try {
+            $tool->createSchema($schema);
+        } catch (ToolsException $exception) {
+            try {
+                $tool->updateSchema($schema, true);
+            } catch (DBALException $exception) {
+                $this->getPluginLogger()->error($exception->getMessage());
+            }
         }
     }
 

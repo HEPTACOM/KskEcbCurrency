@@ -1,8 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-/**
- * Class Shopware_Controllers_Backend_KskEcbCurrency
- */
 class Shopware_Controllers_Backend_KskEcbCurrency extends Shopware_Controllers_Backend_ExtJs
 {
     public function populateCurrenciesAction()

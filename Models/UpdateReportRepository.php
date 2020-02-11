@@ -1,19 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace KskEcbCurrency\Models;
 
 use Doctrine\ORM\EntityRepository;
 use KskEcbCurrency\Exceptions\SuccessfulUpdateReportsNotFoundException;
 
-/**
- * Class UpdateReportRepository
- * @package KskEcbCurrency\Models
- */
 class UpdateReportRepository extends EntityRepository
 {
     /**
-     * @return UpdateReport
      * @throws SuccessfulUpdateReportsNotFoundException
+     *
+     * @return UpdateReport
      */
     public function getLatestSuccessfulUpdateReport()
     {

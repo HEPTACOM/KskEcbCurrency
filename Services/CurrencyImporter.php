@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace KskEcbCurrency\Services;
 
@@ -19,9 +19,7 @@ class CurrencyImporter
     private $pluginDir;
 
     /**
-     * CurrencyImporter constructor.
-     * @param $pluginDir
-     * @param ModelManager $modelManager
+     * @param mixed $pluginDir
      */
     public function __construct($pluginDir, ModelManager $modelManager)
     {
@@ -35,7 +33,7 @@ class CurrencyImporter
         $currencyRepository = $this->modelManager->getRepository(Currency::class);
 
         $currencyFile = implode(DIRECTORY_SEPARATOR, [
-            $this->pluginDir, 'Resources', 'data', 'currencies.json'
+            $this->pluginDir, 'Resources', 'data', 'currencies.json',
         ]);
 
         $rawCurrencies = json_decode(file_get_contents($currencyFile), true);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace KskEcbCurrency\Models;
 
@@ -44,9 +44,6 @@ class UpdateReport extends ModelEntity
      */
     private $updateStrategy;
 
-    /**
-     * UpdateReport constructor.
-     */
     public function __construct()
     {
         /** @var Kernel $kernel */
@@ -99,9 +96,6 @@ class UpdateReport extends ModelEntity
         return $this->timestamp;
     }
 
-    /**
-     * @param DateTime $timestamp
-     */
     public function setTimestamp(DateTime $timestamp)
     {
         $this->timestamp = $timestamp;

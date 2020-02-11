@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace KskEcbCurrency\Services;
 
@@ -10,13 +10,8 @@ use KskEcbCurrency\Exceptions\ResourceNotReachableException;
 use Shopware\Components\HttpClient\GuzzleFactory;
 use Shopware\Components\Logger;
 use Shopware\Components\Model\ModelManager;
-use Shopware\Components\Plugin\DBALConfigReader;
 use Shopware\Models\Shop\Currency;
 
-/**
- * Class EcbConnector
- * @package KskEcbCurrency\Services
- */
 class EcbConnector
 {
     const URL_ECB_REFERENCE_RATES = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
@@ -46,13 +41,6 @@ class EcbConnector
      */
     private $ecbCurrencies = [];
 
-    /**
-     * EcbConnector constructor.
-     * @param GuzzleFactory $guzzleFactory
-     * @param ModelManager $modelManager
-     * @param array $config
-     * @param Logger $logger
-     */
     public function __construct(
         GuzzleFactory $guzzleFactory,
         ModelManager $modelManager,
@@ -84,7 +72,7 @@ class EcbConnector
                 throw new CurrencyNodeNotFoundException();
             }
 
-            foreach($xmlSource->xml()->Cube->Cube->Cube as $eurofxref) {
+            foreach ($xmlSource->xml()->Cube->Cube->Cube as $eurofxref) {
                 $this->ecbCurrencies[(string) $eurofxref['currency']] = (float) $eurofxref['rate'];
             }
         } catch (ResourceNotReachableException $exception) {
